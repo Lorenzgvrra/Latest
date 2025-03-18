@@ -1,0 +1,426 @@
+
+/**
+ * QUEUE - LILO/FIFO
+ *
+ * CRUD:
+ * - Create
+ *  - Insertion: Somewhere in between nodes iin a linkedlist
+ *  - Append : Adds at the end of the linkedlist
+ * - Read
+ *  - Traversal : Read the linkedlist from the start to end
+ *  - Searching : Which checks the value based on parameters if they matched
+ * - Update
+ * - Delete
+ *  - Head
+ *  - Tail
+ *  - Between
+ *
+ * Markers:
+ * - Head : Indicates the first data in the linkedlist
+ * - Tail : Indicates the last data in the linkedlist
+ * - Curr : Indicates the current data in the linkedlist
+ * - PrevCurr : Indicates the previous data of the current data in the
+ * linkedlist
+ * - Temp : Indicates the temporary data in the linkedlist
+ */
+
+#include <array>
+#include <iostream>
+#include <string>
+
+using namespace std;
+
+struct ItemData {
+    int id = 0, quantity = 0;
+    string name = "", description = "";
+    double price = 0.0;
+};
+
+struct ItemNode {
+    // address/pointer member
+    ItemNode* next = nullptr;
+
+    // data/information member
+    ItemData data;
+};
+
+/**
+ * @brief Prompts the user with a specified instruction and captures their
+ * input.
+ *
+ * This function displays a prompt message (instruction) to the user and then
+ * reads the user's input from standard input, storing it into the provided data
+ * variable.
+ *
+ * @param instruction A string containing the message or prompt to display.
+ * @param data A reference to a string where the user's input will be stored.
+ */
+void InputInstruction(string instruction, string& data);
+void InputInstruction(string instruction, double& data);
+void InputInstruction(string instruction, int& data);
+
+/**
+ * @brief Displays the main menu options and captures the user's selection.
+ *
+ * This function prints an array of menu options to the console and prompts the
+ * user to choose one of the available options. The selected option is then
+ * stored in the provided reference variable.
+ *
+ * @param INSTRUCTIONS A constant array of strings representing the available
+ * menu options.
+ * @param MAX The total number of menu options provided in the INSTRUCTIONS
+ * array.
+ * @param choice A reference to an integer where the user's menu selection will
+ * be stored.
+ */
+void MainMenu(const string INSTRUCTIONS[], const int MAX, int& choice);
+
+/**
+ * @brief Creates a new node for the linked list and updates the head, tail, and
+ * counter.
+ *
+ * This function dynamically allocates a new Node, prompts the user for input to
+ * populate the node's data, and appends the node to the linked list. If the
+ * list is initially empty, the new node becomes both the head and tail of the
+ * list. The node counter is also incremented.
+ *
+ * @param head A reference to a pointer to the head node of the linked list.
+ * @param tail A reference to a pointer to the tail node of the linked list.
+ * @param counter A reference to an integer that tracks the total number of
+ * nodes in the list.
+ */
+void CreateNode(ItemNode*& head, ItemNode*& tail, int& counter);
+
+/**
+ * @brief Reads and displays the entire linked list.
+ *
+ * This function traverses the linked list starting from the head node and
+ * prints out the data stored in each node. It provides an overview of all items
+ * in the list for the user.
+ *
+ * @param head A pointer to the head node of the linked list.
+ */
+void ReadList(ItemNode* head);
+
+/**
+ * @brief Searches for a specific node within the linked list.
+ *
+ * This function iterates through the linked list, starting from the head node,
+ * to locate a node that meets a particular search criterion (to be defined by
+ * the application's requirements). Once found, the node's details can be
+ * displayed or further processed.
+ *
+ * @param head A pointer to the head node of the linked list.
+ */
+void SearchNode(ItemNode* head);
+
+/**
+ * @brief Traverses the linked list and performs a defined action on each node.
+ *
+ * This function iterates through each node in the linked list starting from the
+ * head, applying any specified operation (e.g., printing node data, updating
+ * values). It serves as a helper function for systematic processing of all
+ * nodes in the list.
+ *
+ * @param head A pointer to the head node of the linked list.
+ */
+void TraverseList(ItemNode* head);
+
+/**
+ * @brief Update list by inserting new node a head of one value of the stack.
+ *
+ * This function iterates through each nodes in linked list displaying available
+ * nodes to insert the new value. It can accept new value to be stored in newly
+ * created node.
+ *
+ * @param head A pointer to the head node of the linked list.
+ * @param counter A variable that is used to set ID.
+ */
+void UpdateList(int& counter, ItemNode*& head);
+
+void DeleteNode(ItemNode*& tail, ItemNode*& head);
+
+int main() {
+    const string INSTRUCTIONS[] = { "Create", "Read", "Update", "Delete" };
+    const int MAX = end(INSTRUCTIONS) - begin(INSTRUCTIONS);//calculate the maximum number of menu options available
+
+    int choice, counter = 0;
+    ItemNode* head = nullptr, * tail = nullptr;
+
+    do {
+        MainMenu(INSTRUCTIONS, MAX, choice);
+
+        switch (choice) {
+        case 1:
+            CreateNode(head, tail, counter);
+            break;
+        case 2:
+            ReadList(head);
+            break;
+        case 3:
+            UpdateList(counter, head);
+            break;
+        case 4:
+            DeleteNode(tail, head);
+            break;
+        case 0:
+            exit(0);
+
+        default:
+            break;
+        }
+    } while (true);
+
+    system("pause");
+    return 0;
+}
+
+void InputInstruction(string instruction, string& data) {
+    cout << instruction << endl;
+    getline(cin, data);
+}
+
+void InputInstruction(string instruction, double& data) {
+    cout << instruction << endl;
+    cin >> data;
+}
+
+void InputInstruction(string instruction, int& data) {
+    cout << instruction << endl;
+    cin >> data;
+}
+
+void MainMenu(const string INSTRUCTIONS[], const int MAX, int& choice) {
+    cout << "Main Menu of Linked List: \n\n";
+    if (MAX > 0) {
+        for (int i = 0; i < MAX; i++) {
+            cout << i + 1 << ": " << INSTRUCTIONS[i] << endl;
+        }
+        cout << "0. Exit\n";
+        cout << ":: ";
+        cin >> choice;
+    }
+    else {
+        cout << "No Functions yet are available.\n\n\n";
+    }
+	system("pause");
+    system("cls");
+}
+
+void CreateNode(ItemNode*& head, ItemNode*& tail, int& counter) {
+    ItemNode* temp = new ItemNode;
+
+    cout << "Add new Item: \n";
+    cin.ignore();
+	InputInstruction("Item Name: ", temp->data.name);/*temp pointer points to the data member of the struct ItemData and
+    then the name member of the struct ItemData is accessed*/
+    InputInstruction("Item Price: ", temp->data.price);
+    InputInstruction("Item Quantity: ", temp->data.quantity);
+    cin.ignore();
+    InputInstruction("Item Description: ", temp->data.description);
+    temp->data.id = counter;
+
+    system("cls");
+
+	if (head) {//if head is not null
+        tail->next = temp;
+        tail = temp;
+
+        cout << "Added New Item\n\n\n";
+    }
+	else {//if head is null
+		head = temp;//head points to the temp pointer
+        tail = temp;
+
+        cout << "Created Linked List and Added New Item\n\n\n";
+    }
+
+	counter++;//increment the counter by 1 after adding a new item 
+}
+
+void ReadList(ItemNode* head) {
+    if (head) {
+        int choice;
+        do {
+            cout << "List of Items:\n";
+            TraverseList(head);
+            cout << "----------\n"
+                << "1. Check Full Details\n"
+                << "0. exit\n"
+                << ":: ";
+            cin >> choice;
+
+            system("cls");
+
+            switch (choice) {
+            case 1:
+                SearchNode(head);
+                break;
+            case 0:
+                return;
+            default:
+                cout << "Select only from options.\n";
+                system("pause");
+                system("cls");
+                continue;
+            }
+        } while (true);
+    }
+    else {
+        cout << "There is no item list yet\n\n";
+        system("pause");
+        system("cls");
+    }
+}
+
+void SearchNode(ItemNode* head) {
+    ItemNode* curr = head;
+    int WhatToFind;
+
+    TraverseList(head);
+    cout << "ID to check full details: ";
+    cin >> WhatToFind;
+
+    system("cls");
+
+    while (curr) {
+        if (curr->data.id == WhatToFind) {
+            cout << curr->data.id << ". " << curr->data.name
+                << " | Price: " << curr->data.price
+                << " | Quantity: " << curr->data.quantity << endl
+                << "Description:\n"
+				<< "\t " << curr->data.description << "\n\n";//"\t" is used to add a tab space before the text
+            system("pause");
+            system("cls");
+            return;
+        }
+
+		curr = curr->next;//curr pointer points to the next pointer
+    }
+
+    system("cls");
+}
+
+void TraverseList(ItemNode* head) {
+    ItemNode* curr = head;
+    int counter = 1;
+
+    while (curr) {
+        cout << counter << ". " << curr->data.name << " | ID: " << curr->data.id
+            << " | Price: " << curr->data.price << endl;
+
+        curr = curr->next;
+        counter++;
+    }
+}
+
+void UpdateList(int& counter, ItemNode*& head) {
+    ItemNode* temp = new ItemNode;
+    ItemNode* currTemp = nullptr, * prevTemp = nullptr;
+    int wta;
+
+    // Check kung may laman ang linked list
+    if (head == nullptr) { // if (!head)
+        cout << "There is no list yet\n\n";
+
+        system("pause");
+        system("cls");
+    }
+
+    // display ang list
+    TraverseList(head);
+    // set kung saan isisingit
+    cout << "Where to Add the New Node ID: ";
+    cin >> wta;
+
+    cout << "Add new Item: \n";
+    cin.ignore();
+    cout << "Item Name: " << endl;
+    cin >> temp->data.name;
+    cout << "Item Price: " << endl;
+    cin >> temp->data.price;
+    cout << "Item Quantity: " << endl;
+    cin >> temp->data.quantity;
+    cout << "Item Description: " << endl;
+    cin >> temp->data.description;
+    temp->data.id = counter;
+
+    // i set as currTemp si head
+    currTemp = head;
+
+    do {
+        // if magmamatch ang wta at ang currTemp
+        if (wta == currTemp->data.id) {
+			if (currTemp == head) {// if sa head
+                temp->next = head;
+                head = temp;
+            }
+			else {// if hindi sa head
+                temp->next = prevTemp->next;
+                prevTemp->next = temp;
+            }
+            break;
+        }
+		else {// if hindi magmamatch
+            // set si currTemp na prevTemp
+            prevTemp = currTemp;
+            // set si next ng currTemp para maging bagong currTemp
+            currTemp = currTemp->next;
+        }
+    } while (currTemp != nullptr);
+}
+
+void DeleteNode(ItemNode*& tail, ItemNode*& head)
+{
+    int wtf = 0;
+    ItemNode* curr = nullptr, * prevCurr = nullptr;
+    int counter = 1;
+
+    if (head == nullptr)
+    {
+        cout << "There is no item on storage!\n\n";
+
+        system("pause");
+        system("cls");
+        return;
+    }
+
+    curr = head;
+
+	while (curr) {//while curr is not null
+        cout << counter << ". " << curr->data.name << " | ID: " << curr->data.id
+            << " | Price: " << curr->data.price << endl;
+
+        curr = curr->next;
+        counter++;
+    }
+
+    cout << "Input ID to delete: ";
+    cin >> wtf;
+
+    curr = head;
+
+    do {
+		if (curr->data.id == wtf) {// if magmamatch ang wtf at ang curr
+			if (curr == head) {// if sa head ang id na ide-delete 
+                head = head->next;
+                delete curr;
+            }
+			else if (curr == tail) {// if sa tail ang id na ide-delete
+                tail = prevCurr;
+                prevCurr->next = nullptr;
+                delete curr;
+            }
+			else {// if sa gitna ang id na ide-delete
+                prevCurr->next = curr->next;
+                delete curr;
+            }
+
+            return;
+        }
+		else {
+            prevCurr = curr;
+            curr = curr->next;
+        }
+    } while (curr != nullptr);
+}
